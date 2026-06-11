@@ -47,7 +47,8 @@
       .print-btn:hover { background: #333; }
     }
     @media print {
-      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; color: #000; }
+      .section-heading { color: #fff; }
       .print-btn { display: none; }
       .menu-item { break-inside: avoid; }
     }

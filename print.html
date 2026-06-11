@@ -78,8 +78,9 @@
 
     /* Every section after the first gets a fresh page when printing */
     @media print {
-      /* Force background colours to print (black section headers) */
-      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; color: #000; }
+      .section-heading { color: #fff; }
+      .print-btn { display: none; }
       .menu-section + .menu-section { break-before: page; }
       .menu-section { break-inside: avoid; }
       .menu-item { break-inside: avoid; }
