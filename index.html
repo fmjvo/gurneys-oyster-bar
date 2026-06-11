@@ -4,131 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gurney's Oyster Bar</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f5f1ea;
-      --text: #2c3540;
-      --accent: #6a8c7f;
-      --muted: #7a8a95;
+      --ground: #1e2723;
+      --ground-2: #26312c;
+      --pink: #ec3f8f;
+      --chalk: #f1ede1;
+      --gold: #f0c04a;
+      --lime: #bcd62f;
+      --muted: #9aa49d;
+      --line: rgba(241, 237, 225, 0.12);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, sans-serif;
+      background: var(--ground);
+      color: var(--chalk);
+      font-family: 'Fraunces', Georgia, serif;
       font-weight: 400;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* chalk-dust grain + smudge overlay */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .5;
+      background:
+        radial-gradient(120% 80% at 20% 8%, rgba(255,255,255,.05), transparent 60%),
+        radial-gradient(100% 70% at 85% 95%, rgba(255,255,255,.035), transparent 60%);
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
     header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 20px;
-      border-bottom: 2px solid var(--accent);
+      text-align: center;
+      padding: 28px 20px 22px;
+      border-bottom: 1px solid var(--line);
       max-width: 640px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
     header img {
-      width: 42px;
-      height: 42px;
-      flex-shrink: 0;
+      display: block;
+      width: 200px;
+      max-width: 72%;
+      height: auto;
+      margin: 0 auto 6px;
     }
 
     .header-text h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      font-family: 'Cabin Sketch', cursive;
+      font-weight: 700;
+      font-size: 30px;
+      letter-spacing: 0.06em;
+      color: var(--chalk);
+      line-height: 1;
     }
 
     .header-text .tagline {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-top: 4px;
+      font-family: 'Caveat', cursive;
+      font-size: 18px;
+      letter-spacing: 0.01em;
+      color: var(--gold);
+      margin-top: 6px;
     }
 
     #main {
       max-width: 640px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 20px 56px;
+      position: relative;
+      z-index: 1;
     }
 
     .menu-section {
-      padding: 20px 0 8px;
+      padding: 26px 0 8px;
     }
 
     .section-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-family: 'Cabin Sketch', cursive;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
+      color: var(--pink);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
     }
 
     .menu-item {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(44, 53, 64, 0.07);
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(241, 237, 225, 0.07);
     }
 
     .item-left { flex: 1; }
 
     .item-name {
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.4;
+      color: var(--chalk);
       overflow-wrap: break-word;
     }
 
     .item-allergens {
-      font-size: 11px;
+      font-size: 12px;
+      font-style: italic;
       color: var(--muted);
       margin-top: 2px;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
     }
 
     .item-price {
-      font-size: 14px;
-      font-weight: 300;
+      font-family: 'Cabin Sketch', cursive;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--lime);
       margin-left: 16px;
       white-space: nowrap;
     }
 
     .pdf-frame {
       width: 100%;
-      height: calc(100vh - 90px);
+      height: calc(100vh - 140px);
       border: none;
       display: block;
+      border-radius: 8px;
     }
 
     .status {
       padding: 48px 0;
       text-align: center;
-      font-size: 14px;
+      font-size: 16px;
+      font-style: italic;
       color: var(--muted);
     }
 
     .subsection-heading {
-      font-family: Inter, sans-serif;
-      font-size: 11px;
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-size: 13px;
       font-weight: 400;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
-      padding-left: 4px;
-      margin-top: 12px;
+      color: var(--gold);
+      padding-left: 2px;
+      margin-top: 14px;
       margin-bottom: 4px;
     }
 
@@ -147,22 +184,25 @@
     }
 
     .price-label {
-      font-size: 11px;
+      font-size: 12px;
+      font-style: italic;
       color: var(--muted);
       font-weight: 400;
     }
 
     .price-amount {
-      font-size: 14px;
-      font-weight: 300;
+      font-family: 'Cabin Sketch', cursive;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--lime);
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="placeholder-logo.svg" alt="Gurney's Oyster Bar">
+    <img src="logo-white.png" alt="Gurney's Oyster Bar">
     <div class="header-text">
-      <h1>Gurney's Oyster Bar</h1>
+      <h1>Oyster Bar</h1>
       <p class="tagline">Drove Orchards, Thornham, Norfolk</p>
     </div>
   </header>
@@ -253,8 +293,13 @@
       return { pdfOn, pdfUrl, autoOn, autoSecs };
     }
 
+    // Config keys that must never be rendered as menu lines, even if a row
+    // somehow lands below the Section header.
+    const CONFIG_KEYS = ['PDF OVERRIDE', 'AUTO REFRESH'];
+
     function parsePrice(cell) {
-      const parts = String(cell).split('|').map(s => s.trim()).filter(Boolean);
+      // Variants separated by comma (natural input) or pipe (legacy).
+      const parts = String(cell).split(/[,|]/).map(s => s.trim()).filter(Boolean);
       if (!parts.length) return [{ label: '', price: cell }];
       return parts.map(part => {
         const tokens = part.split(/\s+/);
@@ -269,22 +314,36 @@
 
     function renderMenu(menuRows) {
       const main = document.getElementById('main');
-      const data = menuRows.filter(r => r.length >= 4 && (r[2] || '').trim() && (r[3] || '').trim());
-      if (!data.length) {
-        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
-        return;
-      }
 
-      // Build insertion-ordered section → subsection → items structure
+      // Build insertion-ordered section → subsection → items structure.
+      // Forgiving: a row renders if it has a usable label (Name or Subsection);
+      // nothing is silently dropped for a blank Price.
       const sections = {};
       const sectionOrder = [];
-      for (const row of data) {
-        const [section, subsection, name, price, allergens = ''] = row;
-        const sec = (section || '').trim();
-        const sub = (subsection || '').trim();
+      for (const row of menuRows) {
+        const sec = (row[0] || '').trim();
+        const rawSub = (row[1] || '').trim();
+        const name = (row[2] || '').trim();
+        const price = (row[3] || '').trim();
+        const allergens = (row[4] || '').trim();
+
+        // Skip stray config rows and rows with no usable label.
+        if (CONFIG_KEYS.includes(sec.toUpperCase())) continue;
+        if (!name && !rawSub) continue;
+
+        // Name is the line label. If Name is blank, the Subsection text becomes
+        // the label and no subsection heading is emitted for it.
+        const label = name || rawSub;
+        const sub = name ? rawSub : '';
+
         if (!sections[sec]) { sections[sec] = { subOrder: [], subs: {} }; sectionOrder.push(sec); }
         if (!sections[sec].subs[sub]) { sections[sec].subs[sub] = []; sections[sec].subOrder.push(sub); }
-        sections[sec].subs[sub].push({ name: (name || '').trim(), price: (price || '').trim(), allergens: (allergens || '').trim() });
+        sections[sec].subs[sub].push({ name: label, price, allergens });
+      }
+
+      if (!sectionOrder.length) {
+        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        return;
       }
 
       main.innerHTML = sectionOrder.map(sec => {
@@ -293,7 +352,9 @@
           const subHeading = sub ? `<div class="subsection-heading">${escapeHtml(sub)}</div>` : '';
           const itemsHtml = secData.subs[sub].map(item => {
             const variants = parsePrice(item.price);
-            const priceHtml = variants.length === 1
+            const priceHtml = !item.price
+              ? ''
+              : variants.length === 1
               ? `<div class="item-price">${escapeHtml(variants[0].price)}</div>`
               : `<div class="price-list">${variants.map(v =>
                   `<div class="price-variant">${v.label ? `<span class="price-label">${escapeHtml(v.label)}</span>` : ''}<span class="price-amount">${escapeHtml(v.price)}</span></div>`
@@ -343,7 +404,7 @@
         const settings = parseSettings(rows);
         _lastSettings = settings;
 
-        const headerIndex = rows.findIndex(r => (r[0] || '').trim() === 'Section');
+        const headerIndex = rows.findIndex(r => (r[0] || '').trim().toLowerCase() === 'section');
         const menuRows = headerIndex >= 0 ? rows.slice(headerIndex + 1) : [];
 
         if (settings.pdfOn) {
