@@ -1,3 +1,6 @@
 .superpowers/
 .DS_Store
 Thumbs.db
+
+# Local-only brand draft (kept on disk for editing, not deployed)
+brand-preview.html
