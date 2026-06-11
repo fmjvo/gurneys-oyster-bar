@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gurney's Oyster Bar — Brand Preview (draft)</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Caveat:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Hanken+Grotesk:wght@300;400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#1e2723;
+    --ground-2:#26312c;
+    --pink:#ec3f8f;
+    --chalk:#f1ede1;
+    --gold:#f0c04a;
+    --lime:#bcd62f;
+    --muted:#9aa49d;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ground);
+    color:var(--chalk);
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+  }
+  /* chalk-dust grain + smudge overlay */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background:
+      radial-gradient(120% 80% at 20% 10%, rgba(255,255,255,.05), transparent 60%),
+      radial-gradient(100% 70% at 85% 90%, rgba(255,255,255,.04), transparent 60%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+  section{padding:64px 0;border-bottom:1px solid rgba(241,237,225,.10);}
+  .draft-note{
+    background:rgba(236,63,143,.12);border:1px dashed var(--pink);
+    color:var(--chalk);font-size:13px;padding:10px 16px;border-radius:8px;
+    margin:24px auto 0;max-width:900px;text-align:center;letter-spacing:.02em;
+  }
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .sec-title{font-family:'Cabin Sketch',cursive;font-weight:700;font-size:34px;color:var(--chalk);margin-bottom:6px;}
+  .sec-sub{color:var(--muted);font-size:15px;max-width:60ch;margin-bottom:34px;}
+
+  /* HERO */
+  .hero{text-align:center;padding:72px 0 60px;}
+  .logo-mark{display:inline-block;max-width:480px;width:80%;}
+  .logo-mark img{display:block;width:100%;}
+  .hero .wordmark{font-family:'Cabin Sketch',cursive;font-weight:700;line-height:.92;font-size:clamp(46px,12vw,96px);margin:2px 0 6px;color:var(--chalk);letter-spacing:.02em;}
+  .hero .tag{font-family:'Caveat',cursive;font-size:clamp(20px,4vw,30px);color:var(--gold);}
+
+  /* PALETTE */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;}
+  .sw{border-radius:12px;overflow:hidden;background:var(--ground-2);border:1px solid rgba(241,237,225,.08);}
+  .sw .chip{height:96px;display:flex;align-items:flex-end;justify-content:flex-end;padding:8px;}
+  .sw .meta{padding:12px 14px;font-size:12px;}
+  .sw .meta .name{font-weight:500;font-size:13px;color:var(--chalk);}
+  .sw .meta .hex{font-family:'Cabin Sketch',cursive;font-size:16px;letter-spacing:.04em;color:var(--muted);}
+  .sw .meta .use{color:var(--muted);margin-top:6px;line-height:1.45;}
+  .chip .onchip{font-family:'Caveat',cursive;font-size:18px;}
+
+  /* TYPE SPECIMENS */
+  .specimen{background:var(--ground-2);border:1px solid rgba(241,237,225,.08);border-radius:14px;padding:24px 26px;margin-bottom:18px;display:flex;flex-wrap:wrap;align-items:center;gap:18px 28px;}
+  .specimen .label{flex:0 0 150px;}
+  .specimen .label .fname{font-weight:500;font-size:15px;}
+  .specimen .label .ftag{font-size:12px;color:var(--muted);}
+  .specimen .label .pick{display:inline-block;margin-top:8px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);}
+  .specimen .show{flex:1;min-width:240px;}
+  .specimen .show .big{line-height:1;color:var(--chalk);}
+  .specimen .show .big .pk{color:var(--pink);}
+  .f-cabin .big{font-family:'Cabin Sketch',cursive;font-weight:700;font-size:46px;}
+  .f-caveat .big{font-family:'Caveat',cursive;font-weight:700;font-size:54px;}
+  .f-marker .big{font-family:'Permanent Marker',cursive;font-size:40px;}
+  .f-shadows .big{font-family:'Shadows Into Light',cursive;font-size:46px;}
+  .f-gloria .big{font-family:'Gloria Hallelujah',cursive;font-size:34px;}
+  .specimen .show .small{font-size:13px;color:var(--muted);margin-top:8px;}
+
+  /* OYSTER MOTIF */
+  .motif{display:flex;flex-wrap:wrap;gap:32px;align-items:center;}
+  .motif svg{width:230px;height:auto;filter:drop-shadow(0 0 1px rgba(241,237,225,.4));}
+  .oyster-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+  .oyster-row svg{width:64px;}
+
+  /* DIGITAL APPLICATION MOCK */
+  .menu-mock{background:linear-gradient(180deg,var(--ground-2),var(--ground));border:1px solid rgba(241,237,225,.1);border-radius:16px;padding:30px 28px;max-width:460px;margin:0 auto;}
+  .menu-mock .mk-brand{font-family:'Permanent Marker',cursive;color:var(--pink);font-size:13px;letter-spacing:.04em;text-align:center;}
+  .menu-mock .mk-title{font-family:'Cabin Sketch',cursive;font-weight:700;font-size:30px;text-align:center;margin-bottom:4px;}
+  .menu-mock .mk-title .pk{color:var(--pink);}
+  .menu-mock .mk-head{font-family:'Cabin Sketch',cursive;font-weight:700;color:var(--pink);font-size:18px;letter-spacing:.06em;text-transform:uppercase;margin:24px 0 10px;border-bottom:1px solid rgba(241,237,225,.14);padding-bottom:6px;}
+  .menu-mock .row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;gap:16px;}
+  .menu-mock .row .nm{font-size:14px;}
+  .menu-mock .row .al{font-size:11px;color:var(--muted);}
+  .menu-mock .row .pr{font-family:'Cabin Sketch',cursive;font-weight:700;color:var(--lime);font-size:17px;white-space:nowrap;}
+
+  /* DOS & DONTS */
+  .dd{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .dd .card{border-radius:12px;padding:18px 20px;font-size:14px;}
+  .dd .do{background:rgba(188,214,47,.10);border:1px solid rgba(188,214,47,.4);}
+  .dd .dont{background:rgba(236,63,143,.10);border:1px solid rgba(236,63,143,.4);}
+  .dd h4{font-family:'Cabin Sketch',cursive;font-weight:700;font-size:20px;margin-bottom:10px;}
+  .dd .do h4{color:var(--lime);}
+  .dd .dont h4{color:var(--pink);}
+  .dd ul{list-style:none;}
+  .dd li{padding:4px 0 4px 20px;position:relative;color:var(--chalk);}
+  .dd .do li::before{content:"✓";position:absolute;left:0;color:var(--lime);}
+  .dd .dont li::before{content:"✕";position:absolute;left:0;color:var(--pink);}
+
+  .ref{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;}
+  .ref img{max-width:280px;width:100%;border-radius:10px;border:1px solid rgba(241,237,225,.15);}
+  .ref p{flex:1;min-width:240px;color:var(--muted);font-size:14px;}
+  @media(max-width:620px){.dd{grid-template-columns:1fr;}.specimen .label{flex-basis:100%;}}
+  footer{padding:40px 24px 70px;text-align:center;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="draft-note">DRAFT v4 — Fraunces locked in for body, favicon now cut from the real oyster artwork. Visual direction approved → rolling out as a full redesign.</div>
+
+<!-- HERO -->
+<header class="hero wrap">
+  <div class="logo-mark"><img src="logo-white.png" alt="Gurney's hand-drawn oyster logo"></div>
+  <div class="wordmark">OYSTER BAR</div>
+  <div class="tag">fresh off the north norfolk coast</div>
+</header>
+
+<!-- PALETTE -->
+<section class="wrap" id="palette">
+  <div class="eyebrow">01 — Colour</div>
+  <h2 class="sec-title">The chalkboard palette</h2>
+  <p class="sec-sub">Five colours pulled from the opening flyer. Everything sits on the dark slate ground; chalk-white carries the words, and the three brights are used sparingly as highlights.</p>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#1e2723"><span class="onchip" style="color:#f1ede1">ground</span></div><div class="meta"><div class="name">Chalkboard slate</div><div class="hex">#1E2723</div><div class="use">The base for everything. A warm near-black with a green cast.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#ec3f8f"><span class="onchip" style="color:#1e2723">primary</span></div><div class="meta"><div class="name">Chalk pink</div><div class="hex">#EC3F8F</div><div class="use">The signature. Wordmark + section headings.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#f1ede1"><span class="onchip" style="color:#1e2723">text</span></div><div class="meta"><div class="name">Chalk white</div><div class="hex">#F1EDE1</div><div class="use">All body copy &amp; illustration. Never pure #fff.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#f0c04a"><span class="onchip" style="color:#1e2723">accent</span></div><div class="meta"><div class="name">Gold chalk</div><div class="hex">#F0C04A</div><div class="use">Warm highlight — calls to action, taglines.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#bcd62f"><span class="onchip" style="color:#1e2723">accent</span></div><div class="meta"><div class="name">Lime chalk</div><div class="hex">#BCD62F</div><div class="use">Prices, numbers, fresh details.</div></div></div>
+  </div>
+</section>
+
+<!-- TYPE -->
+<section class="wrap" id="type">
+  <div class="eyebrow">02 — Lettering</div>
+  <h2 class="sec-title">The two-tier type system</h2>
+  <p class="sec-sub">One hand-drawn display face for headings, one clean sans for everything functional. The hand-lettered "GURNEYS" in the logo stays as artwork; <strong>Cabin Sketch</strong> extends that feel anywhere we need live, editable headings.</p>
+
+  <div class="specimen f-cabin">
+    <div class="label"><div class="fname">Cabin Sketch</div><div class="ftag">display / headings</div><div class="pick">selected</div></div>
+    <div class="show"><div class="big">OYSTER BAR</div><div class="small">Sketched chalk capitals — the closest live font to the logo lettering. Always in chalk-white; reserved for the wordmark, section headings and big numbers.</div></div>
+  </div>
+  <p class="sec-sub" style="margin-top:34px;">For body copy I've moved off Inter. Here are three less-generic options for menu text &amp; descriptions — same line, you pick the voice:</p>
+
+  <div class="specimen">
+    <div class="label"><div class="fname">Hanken Grotesk</div><div class="ftag">warm humanist sans</div></div>
+    <div class="show">
+      <div style="font-family:'Hanken Grotesk';font-weight:400;font-size:16px;color:var(--chalk);line-height:1.6;">Rock oysters, half a dozen — Maldon salt, lemon, shallot mignonette. Sourced daily from the bay and shucked to order.</div>
+      <div class="small">Friendlier and rounder than Inter, still razor-legible at small sizes. Safe, modern, coastal.</div>
+    </div>
+  </div>
+  <div class="specimen">
+    <div class="label"><div class="fname">Fraunces</div><div class="ftag">characterful serif</div><div class="pick">selected</div></div>
+    <div class="show">
+      <div style="font-family:'Fraunces';font-weight:400;font-size:16px;color:var(--chalk);line-height:1.6;">Rock oysters, half a dozen — Maldon salt, lemon, shallot mignonette. Sourced daily from the bay and shucked to order.</div>
+      <div class="small">Editorial, slightly old-world. Pairs beautifully with the hand-lettering — feels more upscale bistro.</div>
+    </div>
+  </div>
+  <div class="specimen">
+    <div class="label"><div class="fname">Bricolage Grotesque</div><div class="ftag">quirky contemporary</div></div>
+    <div class="show">
+      <div style="font-family:'Bricolage Grotesque';font-weight:400;font-size:16px;color:var(--chalk);line-height:1.6;">Rock oysters, half a dozen — Maldon salt, lemon, shallot mignonette. Sourced daily from the bay and shucked to order.</div>
+      <div class="small">Has personality — subtly irregular. On-trend and distinctive, a little less classic.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MOTIF -->
+<section class="wrap" id="motif">
+  <div class="eyebrow">03 — The mark</div>
+  <h2 class="sec-title">The oyster logo</h2>
+  <p class="sec-sub">The hand-drawn shell with the arched "GURNEYS" lettering is the primary mark. On the chalkboard it's reversed to chalk-white line on the slate ground. It can run as the full lockup, or the shell can be lifted out on its own as a stamp/divider.</p>
+  <div class="motif">
+    <div class="logo-mark" style="max-width:340px;width:100%;"><img src="logo-white.png" alt="Gurney's full oyster logo lockup"></div>
+    <div style="flex:1;min-width:220px;">
+      <p style="color:var(--muted);font-size:14px;">Primary lockup — used large &amp; centred on signage, social posts and the menu header. Always chalk-white line on the slate ground, never recoloured or stretched.</p>
+      <div class="oyster-row">
+        <svg viewBox="0 0 80 56" fill="none" stroke="#f1ede1" stroke-width="1.4" stroke-linecap="round"><ellipse cx="40" cy="30" rx="36" ry="18" transform="rotate(-8 40 30)"/><path d="M8 26 Q30 12 56 14 Q72 16 76 28"/><path d="M14 32 Q40 22 74 32" opacity=".6"/><path d="M40 13 Q37 30 33 46" opacity=".5"/></svg>
+        <svg viewBox="0 0 80 56" fill="none" stroke="#f1ede1" stroke-width="1.4" stroke-linecap="round"><ellipse cx="40" cy="30" rx="36" ry="18" transform="rotate(-8 40 30)"/><path d="M8 26 Q30 12 56 14 Q72 16 76 28"/><path d="M14 32 Q40 22 74 32" opacity=".6"/><path d="M40 13 Q37 30 33 46" opacity=".5"/></svg>
+        <svg viewBox="0 0 80 56" fill="none" stroke="#f1ede1" stroke-width="1.4" stroke-linecap="round"><ellipse cx="40" cy="30" rx="36" ry="18" transform="rotate(-8 40 30)"/><path d="M8 26 Q30 12 56 14 Q72 16 76 28"/><path d="M14 32 Q40 22 74 32" opacity=".6"/><path d="M40 13 Q37 30 33 46" opacity=".5"/></svg>
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px;">Simplified shell — optional small divider / footer motif.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIGITAL -->
+<section class="wrap" id="digital">
+  <div class="eyebrow">04 — Digital application</div>
+  <h2 class="sec-title">How the menu site would look</h2>
+  <p class="sec-sub">The bridge to the rebuild: the same chalkboard ground, chalk-white menu text in legible Inter, pink hand-drawn headings, lime prices. This is a mock of the live menu in the new style.</p>
+  <div class="menu-mock">
+    <div class="logo-mark" style="display:block;max-width:150px;width:60%;margin:0 auto 4px;"><img src="logo-white.png" alt="Gurney's logo"></div>
+    <div class="mk-title">OYSTER BAR</div>
+    <div class="mk-head">Oysters &amp; Shellfish</div>
+    <div class="row"><div><div class="nm">Rock oysters, half dozen</div><div class="al">mignonette, lemon</div></div><div class="pr">£14.50</div></div>
+    <div class="row"><div><div class="nm">Dressed Cromer crab</div><div class="al">brown bread, gulls eggs · GF opt</div></div><div class="pr">£16</div></div>
+    <div class="row"><div><div class="nm">Half pint of shell-on prawns</div><div class="al">aioli</div></div><div class="pr">£9.50</div></div>
+    <div class="mk-head">From the Grill</div>
+    <div class="row"><div><div class="nm">Whole grilled lobster</div><div class="al">garlic butter, fries</div></div><div class="pr">£28</div></div>
+  </div>
+</section>
+
+<!-- DOS & DONTS -->
+<section class="wrap" id="rules">
+  <div class="eyebrow">05 — Guardrails</div>
+  <h2 class="sec-title">Do's &amp; don'ts</h2>
+  <div class="dd">
+    <div class="card do"><h4>Do</h4><ul>
+      <li>Keep everything on the dark slate ground</li>
+      <li>Use chalk-white (#F1EDE1), never pure white</li>
+      <li>Let letters bounce slightly off the baseline</li>
+      <li>Limit each piece to one or two brights</li>
+      <li>Keep body text in clean Inter for legibility</li>
+    </ul></div>
+    <div class="card dont"><h4>Don't</h4><ul>
+      <li>Put pink chalk on a light background</li>
+      <li>Set long paragraphs in the hand-drawn font</li>
+      <li>Crowd all three brights together</li>
+      <li>Use hard pure-black or sterile flat fills</li>
+      <li>Stretch or recolour the oyster mark</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- SOURCE -->
+<section class="wrap" id="source">
+  <div class="eyebrow">Source</div>
+  <h2 class="sec-title">Pulled from this</h2>
+  <div class="ref">
+    <img src="refs for claude/Oyster Flyer open soon flat.jpg" alt="Original Gurney's Oyster Bar opening flyer">
+    <p>The opening flyer is the origin of this whole system — the chalked pink wordmark, the white oyster illustrations, and the gold &amp; lime accents all trace back to it. Colours above are sampled by eye; if you have the original artwork I'll swap in the exact values.</p>
+  </div>
+</section>
+
+<footer>Gurney's Oyster Bar — brand preview draft · react to the colours &amp; pick a lettering hand, and I'll write this up as the proper guideline.</footer>
+
+</body>
+</html>
