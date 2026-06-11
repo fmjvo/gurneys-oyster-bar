@@ -8,7 +8,116 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
   <style>
-    /* styles added in Task 2 */
+    :root {
+      --bg: #f5f1ea;
+      --text: #2c3540;
+      --accent: #6a8c7f;
+      --muted: #7a8a95;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px;
+      border-bottom: 2px solid var(--accent);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    header img {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .header-text .tagline {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    #main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .menu-section {
+      padding: 20px 0 8px;
+    }
+
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(44, 53, 64, 0.07);
+    }
+
+    .item-left { flex: 1; }
+
+    .item-name {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .item-allergens {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .item-price {
+      font-size: 14px;
+      font-weight: 300;
+      margin-left: 16px;
+      white-space: nowrap;
+    }
+
+    .pdf-frame {
+      width: 100%;
+      height: calc(100vh - 90px);
+      border: none;
+      display: block;
+    }
+
+    .status {
+      padding: 48px 0;
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
