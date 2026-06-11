@@ -148,35 +148,34 @@
 
     function parseCSV(text) {
       const rows = [];
-      const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        const fields = [];
-        let i = 0;
-        while (i <= line.length) {
-          if (i === line.length) {
-            if (line[i - 1] === ',') fields.push('');
-            break;
-          }
-          if (line[i] === '"') {
-            let field = '';
-            i++;
-            while (i < line.length) {
-              if (line[i] === '"' && line[i + 1] === '"') { field += '"'; i += 2; }
-              else if (line[i] === '"') { i++; break; }
-              else field += line[i++];
-            }
-            fields.push(field);
-            if (line[i] === ',') i++;
-          } else {
-            const end = line.indexOf(',', i);
-            if (end === -1) { fields.push(line.slice(i)); break; }
-            fields.push(line.slice(i, end));
-            i = end + 1;
-          }
+      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      let field = '';
+      let row = [];
+      let inQuotes = false;
+      const pushRow = () => {
+        row.push(field);
+        if (row.length > 1 || row[0] !== '') rows.push(row);
+        field = '';
+        row = [];
+      };
+      for (let i = 0; i < normalized.length; i++) {
+        const char = normalized[i];
+        if (inQuotes) {
+          if (char === '"' && normalized[i + 1] === '"') { field += '"'; i++; }
+          else if (char === '"') { inQuotes = false; }
+          else { field += char; }
+        } else if (char === '"') {
+          inQuotes = true;
+        } else if (char === ',') {
+          row.push(field);
+          field = '';
+        } else if (char === '\n') {
+          pushRow();
+        } else {
+          field += char;
         }
-        rows.push(fields);
       }
+      pushRow();
       return rows;
     }
 
