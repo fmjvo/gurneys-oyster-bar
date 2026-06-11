@@ -180,7 +180,62 @@
       return rows;
     }
 
-    // renderMenu, showPDF, init added in Tasks 5–6
+    function renderMenu(rows) {
+      const main = document.getElementById('main');
+      const data = rows.slice(1).filter(r => r.length >= 3 && r[0].trim());
+      if (!data.length) {
+        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        return;
+      }
+      const sections = {};
+      const order = [];
+      for (const row of data) {
+        const [section, name, price, allergens = ''] = row;
+        if (!sections[section]) { sections[section] = []; order.push(section); }
+        sections[section].push({ name, price, allergens });
+      }
+      main.innerHTML = order.map(section => `
+        <div class="menu-section">
+          <div class="section-heading">${escapeHtml(section)}</div>
+          ${sections[section].map(item => `
+            <div class="menu-item">
+              <div class="item-left">
+                <div class="item-name">${escapeHtml(item.name)}</div>
+                ${item.allergens.trim() ? `<div class="item-allergens">${escapeHtml(item.allergens)}</div>` : ''}
+              </div>
+              <div class="item-price">${escapeHtml(item.price)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    function showPDF(fileId) {
+      document.getElementById('main').innerHTML =
+        `<iframe class="pdf-frame" src="https://drive.google.com/file/d/${escapeHtml(fileId)}/preview" title="Menu PDF"></iframe>`;
+    }
+
+    async function init() {
+      const main = document.getElementById('main');
+      if (CONFIG.mode === 'pdf' && CONFIG.pdfPath) {
+        showPDF(CONFIG.pdfPath);
+        return;
+      }
+      if (!CONFIG.sheetUrl) {
+        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        return;
+      }
+      try {
+        const res = await fetch(CONFIG.sheetUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        renderMenu(parseCSV(text));
+      } catch {
+        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+      }
+    }
+
+    init();
   </script>
 </body>
 </html>
