@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurney's Oyster Bar — Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 14mm 14mm 16mm;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: #111;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      /* On-screen: simulate A5 page */
+      width: 148mm;
+      min-height: 210mm;
+      margin: 0 auto;
+      padding: 14mm;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 6mm;
+      padding-bottom: 4mm;
+      border-bottom: 1.5pt solid #111;
+    }
+
+    header img {
+      display: block;
+      width: 52mm;
+      height: auto;
+      margin: 0 auto 2mm;
+    }
+
+    header .tagline {
+      font-size: 8pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #444;
+    }
+
+    /* ── Print button (screen only) ─────────────── */
+    .print-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 5mm;
+      padding: 6px 0;
+      background: #111;
+      color: #fff;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 9pt;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+    }
+    .print-btn:hover { background: #333; }
+
+    /* ── Sections ───────────────────────────────── */
+    .menu-section {
+      margin-bottom: 4mm;
+    }
+
+    .section-heading {
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 0.75pt solid #111;
+      padding-bottom: 1.5mm;
+      margin-bottom: 1.5mm;
+    }
+
+    .subsection-heading {
+      font-size: 8pt;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      margin-top: 2.5mm;
+      margin-bottom: 1mm;
+    }
+
+    /* ── Menu rows ──────────────────────────────── */
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 1.2mm 0;
+      border-bottom: 0.5pt solid #ddd;
+    }
+
+    .item-left { flex: 1; }
+
+    .item-name {
+      font-size: 10.5pt;
+      line-height: 1.35;
+    }
+
+    .item-note {
+      font-size: 8pt;
+      font-style: italic;
+      color: #666;
+      margin-top: 0.5mm;
+    }
+
+    .item-price {
+      font-size: 10.5pt;
+      font-weight: 600;
+      margin-left: 5mm;
+      white-space: nowrap;
+    }
+
+    .price-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-left: 5mm;
+    }
+
+    .price-variant {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .price-label {
+      font-size: 8pt;
+      font-style: italic;
+      color: #666;
+    }
+
+    .price-amount {
+      font-size: 10.5pt;
+      font-weight: 600;
+    }
+
+    /* ── Status / loading ───────────────────────── */
+    .status {
+      padding: 12mm 0;
+      text-align: center;
+      font-size: 10pt;
+      font-style: italic;
+      color: #888;
+    }
+
+    /* ── Print overrides ────────────────────────── */
+    @media print {
+      body {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        font-size: 10pt;
+      }
+      .print-btn { display: none; }
+      .menu-item { break-inside: avoid; }
+      .menu-section { break-inside: avoid; }
+    }
+
+    /* ── Screen chrome around page ──────────────── */
+    @media screen {
+      html {
+        background: #e0e0e0;
+        padding: 8mm 0;
+      }
+      body {
+        box-shadow: 0 2px 12px rgba(0,0,0,.2);
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  <header>
+    <img src="logo-dark.jpg" alt="Gurney's Oyster Bar">
+    <p class="tagline">Drove Orchards &middot; Thornham &middot; Norfolk</p>
+  </header>
+  <main id="main">
+    <div class="status">Loading…</div>
+  </main>
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv';
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      let field = '', row = [], inQuotes = false;
+      const pushRow = () => {
+        row.push(field);
+        if (row.length > 1 || row[0] !== '') rows.push(row);
+        field = ''; row = [];
+      };
+      for (let i = 0; i < normalized.length; i++) {
+        const c = normalized[i];
+        if (inQuotes) {
+          if (c === '"' && normalized[i + 1] === '"') { field += '"'; i++; }
+          else if (c === '"') { inQuotes = false; }
+          else { field += c; }
+        } else if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { pushRow(); }
+        else { field += c; }
+      }
+      pushRow();
+      return rows;
+    }
+
+    function parsePrice(cell) {
+      const parts = String(cell).split(/[,|]/).map(s => s.trim()).filter(Boolean);
+      if (!parts.length) return [{ label: '', price: cell }];
+      return parts.map(part => {
+        const tokens = part.split(/\s+/);
+        const last = tokens[tokens.length - 1];
+        if (tokens.length > 1 && (last.startsWith('£') || /^\d/.test(last))) {
+          return { label: tokens.slice(0, -1).join(' '), price: last };
+        }
+        return { label: '', price: part };
+      });
+    }
+
+    const CONFIG_KEYS = ['PDF OVERRIDE', 'AUTO REFRESH'];
+
+    function renderMenu(menuRows) {
+      const main = document.getElementById('main');
+      const sections = {}, sectionOrder = [];
+
+      for (const row of menuRows) {
+        const sec    = (row[0] || '').trim();
+        const rawSub = (row[1] || '').trim();
+        const name   = (row[2] || '').trim();
+        const price  = (row[3] || '').trim();
+        const notes  = row.slice(4).map(s => (s || '').trim()).filter(Boolean).join(', ');
+
+        if (CONFIG_KEYS.includes(sec.toUpperCase())) continue;
+        if (!name && !rawSub) continue;
+
+        const label = name || rawSub;
+        const sub   = name ? rawSub : '';
+
+        if (!sections[sec]) { sections[sec] = { subOrder: [], subs: {} }; sectionOrder.push(sec); }
+        if (!sections[sec].subs[sub]) { sections[sec].subs[sub] = []; sections[sec].subOrder.push(sub); }
+        sections[sec].subs[sub].push({ name: label, price, notes });
+      }
+
+      if (!sectionOrder.length) {
+        main.innerHTML = '<div class="status">Menu unavailable.</div>';
+        return;
+      }
+
+      main.innerHTML = sectionOrder.map(sec => {
+        const secData = sections[sec];
+        const subsHtml = secData.subOrder.map(sub => {
+          const subHeading = sub ? `<div class="subsection-heading">${escapeHtml(sub)}</div>` : '';
+          const itemsHtml = secData.subs[sub].map(item => {
+            const variants = parsePrice(item.price);
+            const priceHtml = !item.price
+              ? ''
+              : (variants.length === 1 && !variants[0].label)
+              ? `<div class="item-price">${escapeHtml(variants[0].price)}</div>`
+              : `<div class="price-list">${variants.map(v =>
+                  `<div class="price-variant">${v.label ? `<span class="price-label">${escapeHtml(v.label)}</span>` : ''}<span class="price-amount">${escapeHtml(v.price)}</span></div>`
+                ).join('')}</div>`;
+            return `
+            <div class="menu-item">
+              <div class="item-left">
+                <div class="item-name">${escapeHtml(item.name)}</div>
+                ${item.notes ? `<div class="item-note">${escapeHtml(item.notes)}</div>` : ''}
+              </div>
+              ${priceHtml}
+            </div>`;
+          }).join('');
+          return subHeading + itemsHtml;
+        }).join('');
+        return `
+        <div class="menu-section">
+          <div class="section-heading">${escapeHtml(sec)}</div>
+          ${subsHtml}
+        </div>`;
+      }).join('');
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(SHEET_URL + '&_=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        const rows = parseCSV(text);
+        const headerIndex = rows.findIndex(r => (r[0] || '').trim().toLowerCase() === 'section');
+        const menuRows = headerIndex >= 0 ? rows.slice(headerIndex + 1) : [];
+        renderMenu(menuRows);
+      } catch {
+        document.getElementById('main').innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
