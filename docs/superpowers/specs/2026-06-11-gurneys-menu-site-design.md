@@ -19,37 +19,53 @@ At the top of the `<script>` block in `index.html`:
 
 ```js
 const CONFIG = {
-  mode: 'sheet',       // 'sheet' or 'pdf'
   sheetUrl: '',        // published Google Sheet CSV URL
-  pdfPath: '',         // Google Drive file ID (for pdf mode)
 }
 ```
 
-## Two Rendering Modes
+## CSV Format
 
-### Sheet mode (default)
+The published Google Sheet contains:
 
-- `fetch()` the published Google Sheet CSV URL
-- Parse CSV client-side (no library — implement a minimal RFC 4180 parser that handles quoted fields, since the Allergens column contains commas and will be quoted by Google Sheets)
-- Show a loading state while fetching; show a user-friendly error if fetch fails
-- Render sections and items into the DOM
+1. **Optional settings rows at the top** (stop parsing when a non-keyword row is found):
+   - `PDF OVERRIDE` (col A) with `ON`/`OFF` (col B) and a Google Drive file URL (col C)
+   - `AUTO REFRESH` (col A) with `ON`/`OFF` (col B) and interval in seconds (col C)
 
-**CSV schema** (Google Sheet column order):
+2. **Menu header and rows** with columns:
 
 | Column | Example |
 |---|---|
 | Section | Oysters |
+| Subsection | *Optional* — Native |
 | Item Name | Native Oysters × 6 |
-| Price | £18 |
+| Price | £18 *or* Small £12 \| Large £18 |
 | Allergens | molluscs, dairy |
 
-### PDF mode
+The `Subsection` column is optional (may be empty). The `Price` cell may contain multiple variants separated by `|`, each formatted as `Label £price`.
 
-- Embed via `<iframe src="https://drive.google.com/file/d/FILE_ID/preview">`
-- FILE_ID comes from `CONFIG.pdfPath`
-- Header remains visible above the embed
-- Embed fills remaining viewport height
-- To update the menu: upload a new version of the same Drive file — no code change needed
+## Rendering Logic
+
+### Sheet vs. PDF
+
+The site checks the `PDF OVERRIDE` row each time it fetches:
+
+- **If `PDF OVERRIDE` is ON and has a valid Drive file URL**: embed the PDF via `<iframe src="https://drive.google.com/file/d/FILE_ID/preview">` (header remains visible, embed fills remaining viewport height)
+- **If `PDF OVERRIDE` is OFF or missing**: render the menu from CSV (sections, subsections if present, items with prices and allergens)
+
+### Menu rendering (sheet mode)
+
+- `fetch()` the published Google Sheet CSV URL
+- Parse CSV client-side (no library — implement a minimal RFC 4180 parser that handles quoted fields)
+- Show a loading state while fetching; show a user-friendly error if fetch fails
+- Extract settings rows (PDF OVERRIDE, AUTO REFRESH) and menu rows
+- Render sections and items into the DOM
+
+### Live auto-refresh
+
+The page re-fetches the sheet on an interval (from the `AUTO REFRESH` row, default 60s):
+- Only explicit `AUTO REFRESH OFF` disables polling
+- On each poll: fetch the sheet, compare to previous CSV (re-render only if changed), and re-evaluate PDF-vs-menu mode
+- Note: the published CSV has a ~5-minute CDN cache; the gviz endpoint is faster but updates less frequently
 
 ## Design
 

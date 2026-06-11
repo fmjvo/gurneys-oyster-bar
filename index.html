@@ -119,6 +119,43 @@
       font-size: 14px;
       color: var(--muted);
     }
+
+    .subsection-heading {
+      font-family: Inter, sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-left: 4px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    .price-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-left: 16px;
+    }
+
+    .price-variant {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .price-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .price-amount {
+      font-size: 14px;
+      font-weight: 300;
+    }
   </style>
 </head>
 <body>
@@ -134,10 +171,13 @@
   </main>
   <script>
     const CONFIG = {
-      mode: 'sheet',  // 'sheet' or 'pdf'
-      sheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv',   // published Google Sheet CSV URL
-      pdfPath: '',    // Google Drive file ID
+      sheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv',
     };
+
+    // Last successfully fetched CSV text — used for no-flicker de-dup
+    let _lastCsv = null;
+    // Latest parsed settings — used by the polling loop
+    let _lastSettings = null;
 
     function escapeHtml(str) {
       return String(str)
@@ -180,34 +220,101 @@
       return rows;
     }
 
-    function renderMenu(rows) {
+    function extractDriveId(url) {
+      if (!url) return null;
+      const m1 = url.match(/\/d\/([^/]+)/);
+      if (m1) return m1[1];
+      const m2 = url.match(/[?&]id=([^&]+)/);
+      if (m2) return m2[1];
+      return null;
+    }
+
+    function parseSettings(rows) {
+      let pdfOn = false;
+      let pdfUrl = '';
+      let autoOn = true;
+      let autoSecs = 60;
+
+      for (const row of rows) {
+        const key = (row[0] || '').trim().toUpperCase();
+        if (key === 'PDF OVERRIDE') {
+          pdfOn = (row[1] || '').trim().toUpperCase() === 'ON';
+          pdfUrl = (row[2] || '').trim();
+        } else if (key === 'AUTO REFRESH') {
+          autoOn = (row[1] || '').trim().toUpperCase() !== 'OFF';
+          const parsed = parseInt(row[2], 10);
+          autoSecs = isNaN(parsed) ? 60 : Math.min(3600, Math.max(15, parsed));
+        } else if (key === 'SECTION') {
+          // Stop scanning once we hit the menu header row
+          break;
+        }
+      }
+
+      return { pdfOn, pdfUrl, autoOn, autoSecs };
+    }
+
+    function parsePrice(cell) {
+      const parts = String(cell).split('|').map(s => s.trim()).filter(Boolean);
+      if (!parts.length) return [{ label: '', price: cell }];
+      return parts.map(part => {
+        const tokens = part.split(/\s+/);
+        const last = tokens[tokens.length - 1];
+        if (tokens.length > 1 && (last.startsWith('£') || /^\d/.test(last))) {
+          const label = tokens.slice(0, -1).join(' ');
+          return { label, price: last };
+        }
+        return { label: '', price: part };
+      });
+    }
+
+    function renderMenu(menuRows) {
       const main = document.getElementById('main');
-      const data = rows.slice(1).filter(r => r.length >= 3 && r[0].trim());
+      const data = menuRows.filter(r => r.length >= 4 && (r[2] || '').trim() && (r[3] || '').trim());
       if (!data.length) {
         main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
         return;
       }
+
+      // Build insertion-ordered section → subsection → items structure
       const sections = {};
-      const order = [];
+      const sectionOrder = [];
       for (const row of data) {
-        const [section, name, price, allergens = ''] = row;
-        if (!sections[section]) { sections[section] = []; order.push(section); }
-        sections[section].push({ name, price, allergens });
+        const [section, subsection, name, price, allergens = ''] = row;
+        const sec = (section || '').trim();
+        const sub = (subsection || '').trim();
+        if (!sections[sec]) { sections[sec] = { subOrder: [], subs: {} }; sectionOrder.push(sec); }
+        if (!sections[sec].subs[sub]) { sections[sec].subs[sub] = []; sections[sec].subOrder.push(sub); }
+        sections[sec].subs[sub].push({ name: (name || '').trim(), price: (price || '').trim(), allergens: (allergens || '').trim() });
       }
-      main.innerHTML = order.map(section => `
-        <div class="menu-section">
-          <div class="section-heading">${escapeHtml(section)}</div>
-          ${sections[section].map(item => `
+
+      main.innerHTML = sectionOrder.map(sec => {
+        const secData = sections[sec];
+        const subsHtml = secData.subOrder.map(sub => {
+          const subHeading = sub ? `<div class="subsection-heading">${escapeHtml(sub)}</div>` : '';
+          const itemsHtml = secData.subs[sub].map(item => {
+            const variants = parsePrice(item.price);
+            const priceHtml = variants.length === 1
+              ? `<div class="item-price">${escapeHtml(variants[0].price)}</div>`
+              : `<div class="price-list">${variants.map(v =>
+                  `<div class="price-variant">${v.label ? `<span class="price-label">${escapeHtml(v.label)}</span>` : ''}<span class="price-amount">${escapeHtml(v.price)}</span></div>`
+                ).join('')}</div>`;
+            return `
             <div class="menu-item">
               <div class="item-left">
                 <div class="item-name">${escapeHtml(item.name)}</div>
-                ${item.allergens.trim() ? `<div class="item-allergens">${escapeHtml(item.allergens)}</div>` : ''}
+                ${item.allergens ? `<div class="item-allergens">${escapeHtml(item.allergens)}</div>` : ''}
               </div>
-              <div class="item-price">${escapeHtml(item.price)}</div>
-            </div>
-          `).join('')}
-        </div>
-      `).join('');
+              ${priceHtml}
+            </div>`;
+          }).join('');
+          return subHeading + itemsHtml;
+        }).join('');
+        return `
+        <div class="menu-section">
+          <div class="section-heading">${escapeHtml(sec)}</div>
+          ${subsHtml}
+        </div>`;
+      }).join('');
     }
 
     function showPDF(fileId) {
@@ -215,23 +322,62 @@
         `<iframe class="pdf-frame" src="https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview" title="Menu PDF"></iframe>`;
     }
 
-    async function init() {
+    async function refresh() {
       const main = document.getElementById('main');
-      if (CONFIG.mode === 'pdf' && CONFIG.pdfPath) {
-        showPDF(CONFIG.pdfPath);
-        return;
-      }
       if (!CONFIG.sheetUrl) {
-        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        if (_lastCsv === null) {
+          main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        }
         return;
       }
       try {
-        const res = await fetch(CONFIG.sheetUrl);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(CONFIG.sheetUrl + '&_=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const text = await res.text();
-        renderMenu(parseCSV(text));
-      } catch {
-        main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+
+        // Skip re-render if content unchanged (no flicker, preserve scroll)
+        if (text === _lastCsv) return;
+        _lastCsv = text;
+
+        const rows = parseCSV(text);
+        const settings = parseSettings(rows);
+        _lastSettings = settings;
+
+        const headerIndex = rows.findIndex(r => (r[0] || '').trim() === 'Section');
+        const menuRows = headerIndex >= 0 ? rows.slice(headerIndex + 1) : [];
+
+        if (settings.pdfOn) {
+          const fileId = extractDriveId(settings.pdfUrl);
+          if (fileId) {
+            showPDF(fileId);
+            return;
+          }
+        }
+
+        // PDF is off or no valid Drive ID — render the menu
+        renderMenu(menuRows);
+      } catch (err) {
+        // On failure, keep last good render; only show error if no prior render
+        if (_lastCsv === null) {
+          main.innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        }
+      }
+    }
+
+    function loop() {
+      refresh().then(() => {
+        const settings = _lastSettings;
+        if (settings && settings.autoOn) {
+          setTimeout(loop, settings.autoSecs * 1000);
+        }
+      });
+    }
+
+    async function init() {
+      await refresh();
+      // After first fetch attempt, start polling if auto-refresh is on
+      if (_lastSettings && _lastSettings.autoOn) {
+        setTimeout(loop, _lastSettings.autoSecs * 1000);
       }
     }
 

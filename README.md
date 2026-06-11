@@ -2,55 +2,95 @@
 
 Static menu website for Gurney's Oyster Bar. Deployed on Railway. Viewed on mobile via QR code.
 
-## Updating the menu
+## Google Sheet structure
 
-### Option A — Google Sheet (default)
+The sheet has two settings rows at the top, a blank spacer row, then the menu rows:
 
-1. Create a Google Sheet with these exact column headers in row 1:
+| Col A | Col B | Col C |
+|---|---|---|
+| `PDF OVERRIDE` | `ON` / `OFF` | Full Google Drive share URL of the PDF |
+| `AUTO REFRESH` | `ON` / `OFF` | Refresh interval in seconds (blank = 60) |
+| *(leave this row blank)* | | |
+| Section | Subsection | Item Name | Price | Allergens |
+| Oysters | | Native Oysters × 6 | £18 | molluscs |
+| Wine | White | Muscadet, Glass | £7 | sulphites |
+| Wine | White | Chablis, Glass | `175ml £7 \| 250ml £9 \| Bottle £28` | sulphites |
 
-   | Section | Item Name | Price | Allergens |
-   |---|---|---|---|
-   | Oysters | Native Oysters × 6 | £18 | molluscs |
-   | Wine | Muscadet, Glass | £7 | sulphites |
+> The header row with column names (Section, Subsection, …) is row 4. Rows 1–3 are always the two settings rows and the blank spacer.
 
-   - **Section** — groups items under a heading (e.g. Oysters, Wine, Beer, Puddings)
-   - **Item Name** — displayed as-is
-   - **Price** — displayed as-is (include £ symbol)
-   - **Allergens** — comma-separated list, shown in small text below the item name. Leave blank if none.
+### Menu columns
 
-2. Publish the sheet: **File → Share → Publish to web → Sheet 1 → Comma-separated values (.csv) → Publish**
+- **Section** — groups items under a heading (e.g. Oysters, Wine, Beer, Puddings)
+- **Subsection** — optional middle grouping within a section (e.g. White / Red / Rosé under Wine). Leave blank and the item sits directly under the Section heading.
+- **Item Name** — displayed as-is
+- **Price** — one price or multiple variants separated by `|`, e.g. `175ml £7 | 250ml £9 | Bottle £28` or `Single £3.50 | Dozen £18`. A plain `£8` still works fine.
+- **Allergens** — comma-separated list, shown in small text below the item name. Leave blank if none.
 
-3. Copy the URL and paste it into `index.html`:
+---
 
-   ```js
-   const CONFIG = {
-     mode: 'sheet',
-     sheetUrl: 'PASTE_URL_HERE',
-     pdfPath: '',
-   };
-   ```
+## Day-to-day tasks
 
-4. Commit and push — Railway redeploys automatically.
+### Adding or editing menu items
 
-### Option B — PDF (Canva export)
+Edit the sheet directly. Changes appear on the live site within a few minutes (see Auto Refresh below).
 
-1. Export your Canva menu as a PDF.
+### Switching to a PDF menu (e.g. seasonal special)
+
+Use the **PDF OVERRIDE** row (row 1 of the sheet):
+
+1. Export your menu as a PDF (e.g. from Canva).
 2. Upload it to Google Drive. Set sharing to **Anyone with the link → Viewer**.
-3. Copy the file ID from the Drive URL:
-   `https://drive.google.com/file/d/FILE_ID_IS_HERE/view`
-4. Update `index.html`:
+3. Copy the full share URL from Drive (it looks like `https://drive.google.com/file/d/…/view`).
+4. In the sheet, set **column B of row 1** to `ON` and paste the full URL into **column C of row 1**.
+5. The site immediately shows the PDF instead of the live menu.
 
-   ```js
-   const CONFIG = {
-     mode: 'pdf',
-     sheetUrl: '',
-     pdfPath: 'FILE_ID_IS_HERE',
-   };
-   ```
+To go back to the live menu, set column B of row 1 back to `OFF`.
 
-5. To update the PDF later: right-click the file in Drive → **Manage versions → Upload new version**. The site updates automatically — no code change needed.
+**To update a PDF without changing the URL:** right-click the file in Drive → **Manage versions → Upload new version**. The site updates automatically.
 
-6. Commit and push.
+**Adding an ON/OFF dropdown to column B (one-time setup):**
+
+1. Click cell B1.
+2. Go to **Data → Data validation → Add rule**.
+3. Under Criteria choose **Dropdown** and enter the two options: `ON` and `OFF`.
+4. Save. Repeat for B2 (the AUTO REFRESH row).
+
+---
+
+### Auto Refresh
+
+The **AUTO REFRESH** row (row 2 of the sheet) controls whether the site automatically re-fetches the menu in the background:
+
+- **ON** — the site polls for updates on the interval set in column C (in seconds). Leave column C blank to use the default of 60 seconds. This means edits you make to the sheet appear on customers' phones without them needing to reload the page.
+- **OFF** — no polling; customers see the version loaded when they opened the page.
+
+**Tip on update speed:** Google's published CSV URL (`…/pub?output=csv`) is cached by Google for roughly 5 minutes. If you use the alternative `gviz` endpoint (`…/gviz/tq?tqx=out:csv&sheet=Sheet1`) as the `sheetUrl` in the code, updates typically appear within seconds rather than minutes.
+
+---
+
+## First-time setup (technical)
+
+### Publishing the sheet
+
+1. Create a Google Sheet following the structure above.
+2. Publish it: **File → Share → Publish to web → Sheet 1 → Comma-separated values (.csv) → Publish**.
+3. Copy the URL.
+
+### Updating the code
+
+Paste the URL into `index.html`. The only setting you need to change is `sheetUrl`:
+
+```js
+const CONFIG = {
+  sheetUrl: 'PASTE_URL_HERE',
+};
+```
+
+> Note: the old `mode` and `pdfPath` fields have been removed. PDF mode is now controlled entirely from the sheet via the PDF OVERRIDE row.
+
+Commit and push — Railway redeploys automatically.
+
+---
 
 ## Local preview
 
