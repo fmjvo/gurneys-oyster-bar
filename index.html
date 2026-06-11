@@ -89,6 +89,7 @@
     .item-name {
       font-size: 14px;
       line-height: 1.4;
+      overflow-wrap: break-word;
     }
 
     .item-allergens {
@@ -211,7 +212,7 @@
 
     function showPDF(fileId) {
       document.getElementById('main').innerHTML =
-        `<iframe class="pdf-frame" src="https://drive.google.com/file/d/${escapeHtml(fileId)}/preview" title="Menu PDF"></iframe>`;
+        `<iframe class="pdf-frame" src="https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview" title="Menu PDF"></iframe>`;
     }
 
     async function init() {
