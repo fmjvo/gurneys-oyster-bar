@@ -3,84 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gurney's Oyster Bar — Menu</title>
+  <title>Gurney's — Menu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
   <style>
-    @page {
-      size: A5 portrait;
-      margin: 14mm 14mm 16mm;
-    }
+    @page { size: A5 portrait; margin: 12mm 14mm; }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #fff;
-      color: #111;
+      color: #000;
       font-family: 'Fraunces', Georgia, serif;
       font-size: 10.5pt;
-      line-height: 1.45;
-      -webkit-font-smoothing: antialiased;
-      /* On-screen: simulate A5 page */
-      width: 148mm;
-      min-height: 210mm;
-      margin: 0 auto;
-      padding: 14mm;
+      line-height: 1.4;
     }
+
+    /* ── Screen chrome ──────────────────────────── */
+    @media screen {
+      html { background: #ccc; padding: 10mm 0 20mm; }
+      body {
+        width: 148mm;
+        min-height: 210mm;
+        margin: 0 auto;
+        padding: 12mm 14mm;
+        box-shadow: 0 3px 18px rgba(0,0,0,.35);
+      }
+      .print-btn {
+        display: block;
+        width: calc(100% + 28mm);
+        margin: -12mm -14mm 8mm;
+        padding: 7px 0;
+        background: #111;
+        color: #fff;
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 8.5pt;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+      }
+      .print-btn:hover { background: #333; }
+    }
+    @media print { .print-btn { display: none; } }
 
     /* ── Header ─────────────────────────────────── */
     header {
       text-align: center;
       margin-bottom: 6mm;
-      padding-bottom: 4mm;
-      border-bottom: 1.5pt solid #111;
+      padding-bottom: 5mm;
+      border-bottom: 2pt solid #000;
     }
 
     header img {
       display: block;
-      width: 52mm;
+      width: 58mm;
       height: auto;
-      margin: 0 auto 2mm;
+      margin: 0 auto 2.5mm;
     }
 
     header .tagline {
-      font-size: 8pt;
-      letter-spacing: 0.12em;
+      font-size: 7.5pt;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #444;
+      color: #000;
     }
-
-    /* ── Print button (screen only) ─────────────── */
-    .print-btn {
-      display: block;
-      width: 100%;
-      margin-bottom: 5mm;
-      padding: 6px 0;
-      background: #111;
-      color: #fff;
-      font-family: 'Fraunces', Georgia, serif;
-      font-size: 9pt;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-    }
-    .print-btn:hover { background: #333; }
 
     /* ── Sections ───────────────────────────────── */
     .menu-section {
-      margin-bottom: 4mm;
+      margin-bottom: 5mm;
+    }
+
+    /* Every section after the first gets a fresh page when printing */
+    @media print {
+      .menu-section + .menu-section { break-before: page; }
+      .menu-section { break-inside: avoid; }
     }
 
     .section-heading {
+      background: #000;
+      color: #fff;
       font-size: 11pt;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      border-bottom: 0.75pt solid #111;
-      padding-bottom: 1.5mm;
-      margin-bottom: 1.5mm;
+      padding: 2.5mm 3.5mm;
+      margin-bottom: 2mm;
     }
 
     .subsection-heading {
@@ -89,37 +99,38 @@
       font-weight: 400;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #555;
-      margin-top: 2.5mm;
+      color: #444;
+      margin-top: 3mm;
       margin-bottom: 1mm;
+      padding-left: 1mm;
     }
 
-    /* ── Menu rows ──────────────────────────────── */
+    /* ── Items ──────────────────────────────────── */
     .menu-item {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 1.2mm 0;
-      border-bottom: 0.5pt solid #ddd;
+      padding: 1.8mm 0;
+      border-bottom: 0.5pt solid #bbb;
     }
 
-    .item-left { flex: 1; }
+    .item-left { flex: 1; min-width: 0; }
 
     .item-name {
       font-size: 10.5pt;
-      line-height: 1.35;
+      font-weight: 400;
     }
 
     .item-note {
       font-size: 8pt;
       font-style: italic;
-      color: #666;
-      margin-top: 0.5mm;
+      color: #555;
+      margin-top: 0.4mm;
     }
 
     .item-price {
-      font-size: 10.5pt;
-      font-weight: 600;
+      font-size: 11pt;
+      font-weight: 700;
       margin-left: 5mm;
       white-space: nowrap;
     }
@@ -141,45 +152,21 @@
     .price-label {
       font-size: 8pt;
       font-style: italic;
-      color: #666;
+      color: #555;
     }
 
     .price-amount {
-      font-size: 10.5pt;
-      font-weight: 600;
+      font-size: 11pt;
+      font-weight: 700;
     }
 
-    /* ── Status / loading ───────────────────────── */
+    /* ── Status ─────────────────────────────────── */
     .status {
-      padding: 12mm 0;
+      padding: 10mm 0;
       text-align: center;
       font-size: 10pt;
       font-style: italic;
       color: #888;
-    }
-
-    /* ── Print overrides ────────────────────────── */
-    @media print {
-      body {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-        font-size: 10pt;
-      }
-      .print-btn { display: none; }
-      .menu-item { break-inside: avoid; }
-      .menu-section { break-inside: avoid; }
-    }
-
-    /* ── Screen chrome around page ──────────────── */
-    @media screen {
-      html {
-        background: #e0e0e0;
-        padding: 8mm 0;
-      }
-      body {
-        box-shadow: 0 2px 12px rgba(0,0,0,.2);
-      }
     }
   </style>
 </head>
@@ -193,108 +180,100 @@
     <div class="status">Loading…</div>
   </main>
   <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv';
+    // Set to a section name (case-insensitive) to show only that section,
+    // or null to show everything.
+    const SECTION_FILTER = null;
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv';
+    const CONFIG_KEYS = ['PDF OVERRIDE', 'AUTO REFRESH'];
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function parseCSV(text) {
       const rows = [];
-      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-      let field = '', row = [], inQuotes = false;
-      const pushRow = () => {
-        row.push(field);
-        if (row.length > 1 || row[0] !== '') rows.push(row);
-        field = ''; row = [];
-      };
-      for (let i = 0; i < normalized.length; i++) {
-        const c = normalized[i];
-        if (inQuotes) {
-          if (c === '"' && normalized[i + 1] === '"') { field += '"'; i++; }
-          else if (c === '"') { inQuotes = false; }
-          else { field += c; }
-        } else if (c === '"') { inQuotes = true; }
-        else if (c === ',') { row.push(field); field = ''; }
-        else if (c === '\n') { pushRow(); }
-        else { field += c; }
+      const norm = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+      let field = '', row = [], inQ = false;
+      const push = () => { row.push(field); if (row.length>1||row[0]!=='') rows.push(row); field=''; row=[]; };
+      for (let i=0; i<norm.length; i++) {
+        const c = norm[i];
+        if (inQ) {
+          if (c==='"' && norm[i+1]==='"') { field+='"'; i++; }
+          else if (c==='"') inQ=false;
+          else field+=c;
+        } else if (c==='"') inQ=true;
+        else if (c===',') { row.push(field); field=''; }
+        else if (c==='\n') push();
+        else field+=c;
       }
-      pushRow();
+      push();
       return rows;
     }
 
     function parsePrice(cell) {
-      const parts = String(cell).split(/[,|]/).map(s => s.trim()).filter(Boolean);
-      if (!parts.length) return [{ label: '', price: cell }];
+      const parts = String(cell).split(/[,|]/).map(s=>s.trim()).filter(Boolean);
+      if (!parts.length) return [{label:'',price:cell}];
       return parts.map(part => {
         const tokens = part.split(/\s+/);
-        const last = tokens[tokens.length - 1];
-        if (tokens.length > 1 && (last.startsWith('£') || /^\d/.test(last))) {
-          return { label: tokens.slice(0, -1).join(' '), price: last };
-        }
-        return { label: '', price: part };
+        const last = tokens[tokens.length-1];
+        if (tokens.length>1 && (last.startsWith('£')||/^\d/.test(last)))
+          return { label: tokens.slice(0,-1).join(' '), price: last };
+        return { label:'', price: part };
       });
     }
 
-    const CONFIG_KEYS = ['PDF OVERRIDE', 'AUTO REFRESH'];
-
     function renderMenu(menuRows) {
       const main = document.getElementById('main');
-      const sections = {}, sectionOrder = [];
+      const sections = {}, order = [];
 
       for (const row of menuRows) {
-        const sec    = (row[0] || '').trim();
-        const rawSub = (row[1] || '').trim();
-        const name   = (row[2] || '').trim();
-        const price  = (row[3] || '').trim();
-        const notes  = row.slice(4).map(s => (s || '').trim()).filter(Boolean).join(', ');
+        const sec    = (row[0]||'').trim();
+        const rawSub = (row[1]||'').trim();
+        const name   = (row[2]||'').trim();
+        const price  = (row[3]||'').trim();
+        const notes  = row.slice(4).map(s=>(s||'').trim()).filter(Boolean).join(', ');
 
         if (CONFIG_KEYS.includes(sec.toUpperCase())) continue;
         if (!name && !rawSub) continue;
+        if (SECTION_FILTER && sec.toLowerCase() !== SECTION_FILTER.toLowerCase()) continue;
 
         const label = name || rawSub;
         const sub   = name ? rawSub : '';
 
-        if (!sections[sec]) { sections[sec] = { subOrder: [], subs: {} }; sectionOrder.push(sec); }
-        if (!sections[sec].subs[sub]) { sections[sec].subs[sub] = []; sections[sec].subOrder.push(sub); }
-        sections[sec].subs[sub].push({ name: label, price, notes });
+        if (!sections[sec]) { sections[sec]={subOrder:[],subs:{}}; order.push(sec); }
+        if (!sections[sec].subs[sub]) { sections[sec].subs[sub]=[]; sections[sec].subOrder.push(sub); }
+        sections[sec].subs[sub].push({name:label,price,notes});
       }
 
-      if (!sectionOrder.length) {
-        main.innerHTML = '<div class="status">Menu unavailable.</div>';
+      if (!order.length) {
+        main.innerHTML='<div class="status">Menu unavailable — please ask a member of staff.</div>';
         return;
       }
 
-      main.innerHTML = sectionOrder.map(sec => {
-        const secData = sections[sec];
-        const subsHtml = secData.subOrder.map(sub => {
-          const subHeading = sub ? `<div class="subsection-heading">${escapeHtml(sub)}</div>` : '';
-          const itemsHtml = secData.subs[sub].map(item => {
-            const variants = parsePrice(item.price);
-            const priceHtml = !item.price
-              ? ''
-              : (variants.length === 1 && !variants[0].label)
-              ? `<div class="item-price">${escapeHtml(variants[0].price)}</div>`
-              : `<div class="price-list">${variants.map(v =>
-                  `<div class="price-variant">${v.label ? `<span class="price-label">${escapeHtml(v.label)}</span>` : ''}<span class="price-amount">${escapeHtml(v.price)}</span></div>`
-                ).join('')}</div>`;
-            return `
-            <div class="menu-item">
-              <div class="item-left">
-                <div class="item-name">${escapeHtml(item.name)}</div>
-                ${item.notes ? `<div class="item-note">${escapeHtml(item.notes)}</div>` : ''}
-              </div>
-              ${priceHtml}
-            </div>`;
-          }).join('');
-          return subHeading + itemsHtml;
-        }).join('');
-        return `
-        <div class="menu-section">
+      main.innerHTML = order.map(sec => {
+        const d = sections[sec];
+        return `<div class="menu-section">
           <div class="section-heading">${escapeHtml(sec)}</div>
-          ${subsHtml}
+          ${d.subOrder.map(sub => {
+            const subH = sub ? `<div class="subsection-heading">${escapeHtml(sub)}</div>` : '';
+            return subH + d.subs[sub].map(item => {
+              const v = parsePrice(item.price);
+              const priceH = !item.price ? ''
+                : (v.length===1 && !v[0].label)
+                  ? `<div class="item-price">${escapeHtml(v[0].price)}</div>`
+                  : `<div class="price-list">${v.map(x =>
+                      `<div class="price-variant">${x.label?`<span class="price-label">${escapeHtml(x.label)}</span>`:''}<span class="price-amount">${escapeHtml(x.price)}</span></div>`
+                    ).join('')}</div>`;
+              return `<div class="menu-item">
+                <div class="item-left">
+                  <div class="item-name">${escapeHtml(item.name)}</div>
+                  ${item.notes?`<div class="item-note">${escapeHtml(item.notes)}</div>`:''}
+                </div>
+                ${priceH}
+              </div>`;
+            }).join('');
+          }).join('')}
         </div>`;
       }).join('');
     }
@@ -305,11 +284,11 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const text = await res.text();
         const rows = parseCSV(text);
-        const headerIndex = rows.findIndex(r => (r[0] || '').trim().toLowerCase() === 'section');
-        const menuRows = headerIndex >= 0 ? rows.slice(headerIndex + 1) : [];
-        renderMenu(menuRows);
+        const hi = rows.findIndex(r => (r[0]||'').trim().toLowerCase() === 'section');
+        renderMenu(hi >= 0 ? rows.slice(hi+1) : []);
       } catch {
-        document.getElementById('main').innerHTML = '<div class="status">Menu unavailable — please ask a member of staff.</div>';
+        document.getElementById('main').innerHTML =
+          '<div class="status">Menu unavailable — please ask a member of staff.</div>';
       }
     }
 

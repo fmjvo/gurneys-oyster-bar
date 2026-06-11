@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurney's — Drinks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A5 portrait; margin: 12mm 14mm; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: #000;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 10.5pt;
+      line-height: 1.4;
+    }
+
+    @media screen {
+      html { background: #ccc; padding: 10mm 0 20mm; }
+      body {
+        width: 148mm;
+        min-height: 210mm;
+        margin: 0 auto;
+        padding: 12mm 14mm;
+        box-shadow: 0 3px 18px rgba(0,0,0,.35);
+      }
+      .print-btn {
+        display: block;
+        width: calc(100% + 28mm);
+        margin: -12mm -14mm 8mm;
+        padding: 7px 0;
+        background: #111;
+        color: #fff;
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 8.5pt;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+      }
+      .print-btn:hover { background: #333; }
+    }
+    @media print { .print-btn { display: none; } }
+
+    header {
+      text-align: center;
+      margin-bottom: 6mm;
+      padding-bottom: 5mm;
+      border-bottom: 2pt solid #000;
+    }
+
+    header img {
+      display: block;
+      width: 58mm;
+      height: auto;
+      margin: 0 auto 2.5mm;
+    }
+
+    header .tagline {
+      font-size: 7.5pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .menu-section { margin-bottom: 5mm; }
+
+    .section-heading {
+      background: #000;
+      color: #fff;
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2.5mm 3.5mm;
+      margin-bottom: 2mm;
+    }
+
+    .subsection-heading {
+      font-size: 8pt;
+      font-style: italic;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-top: 3mm;
+      margin-bottom: 1mm;
+      padding-left: 1mm;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 1.8mm 0;
+      border-bottom: 0.5pt solid #bbb;
+    }
+
+    .item-left { flex: 1; min-width: 0; }
+    .item-name { font-size: 10.5pt; }
+    .item-note { font-size: 8pt; font-style: italic; color: #555; margin-top: 0.4mm; }
+
+    .item-price { font-size: 11pt; font-weight: 700; margin-left: 5mm; white-space: nowrap; }
+
+    .price-list { display: flex; flex-direction: column; align-items: flex-end; margin-left: 5mm; }
+    .price-variant { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+    .price-label { font-size: 8pt; font-style: italic; color: #555; }
+    .price-amount { font-size: 11pt; font-weight: 700; }
+
+    .status { padding: 10mm 0; text-align: center; font-size: 10pt; font-style: italic; color: #888; }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  <header>
+    <img src="../logo-dark.jpg" alt="Gurney's Oyster Bar">
+    <p class="tagline">Drove Orchards &middot; Thornham &middot; Norfolk</p>
+  </header>
+  <main id="main"><div class="status">Loading…</div></main>
+  <script>
+    const SECTION_FILTER = 'drinks';
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRaqVNhAEELP9SiGOgkS2tN9dP30rGiW41_-DsLKzoemBf0MYN_qlQzzyKGnouRjJLg-_SH77yPH5lH/pub?output=csv';
+    const CONFIG_KEYS = ['PDF OVERRIDE', 'AUTO REFRESH'];
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      const norm = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
+      let field='', row=[], inQ=false;
+      const push = () => { row.push(field); if (row.length>1||row[0]!=='') rows.push(row); field=''; row=[]; };
+      for (let i=0; i<norm.length; i++) {
+        const c=norm[i];
+        if (inQ) {
+          if (c==='"'&&norm[i+1]==='"') { field+='"'; i++; }
+          else if (c==='"') inQ=false;
+          else field+=c;
+        } else if (c==='"') inQ=true;
+        else if (c===',') { row.push(field); field=''; }
+        else if (c==='\n') push();
+        else field+=c;
+      }
+      push();
+      return rows;
+    }
+
+    function parsePrice(cell) {
+      const parts = String(cell).split(/[,|]/).map(s=>s.trim()).filter(Boolean);
+      if (!parts.length) return [{label:'',price:cell}];
+      return parts.map(part => {
+        const tokens=part.split(/\s+/), last=tokens[tokens.length-1];
+        if (tokens.length>1&&(last.startsWith('£')||/^\d/.test(last)))
+          return {label:tokens.slice(0,-1).join(' '),price:last};
+        return {label:'',price:part};
+      });
+    }
+
+    function renderMenu(menuRows) {
+      const main = document.getElementById('main');
+      const sections={}, order=[];
+      for (const row of menuRows) {
+        const sec=(row[0]||'').trim(), rawSub=(row[1]||'').trim();
+        const name=(row[2]||'').trim(), price=(row[3]||'').trim();
+        const notes=row.slice(4).map(s=>(s||'').trim()).filter(Boolean).join(', ');
+        if (CONFIG_KEYS.includes(sec.toUpperCase())) continue;
+        if (!name&&!rawSub) continue;
+        if (sec.toLowerCase()!==SECTION_FILTER) continue;
+        const label=name||rawSub, sub=name?rawSub:'';
+        if (!sections[sec]) { sections[sec]={subOrder:[],subs:{}}; order.push(sec); }
+        if (!sections[sec].subs[sub]) { sections[sec].subs[sub]=[]; sections[sec].subOrder.push(sub); }
+        sections[sec].subs[sub].push({name:label,price,notes});
+      }
+      if (!order.length) { main.innerHTML='<div class="status">Menu unavailable — please ask a member of staff.</div>'; return; }
+      main.innerHTML=order.map(sec => {
+        const d=sections[sec];
+        return `<div class="menu-section"><div class="section-heading">${escapeHtml(sec)}</div>${
+          d.subOrder.map(sub => {
+            const subH=sub?`<div class="subsection-heading">${escapeHtml(sub)}</div>`:'';
+            return subH+d.subs[sub].map(item => {
+              const v=parsePrice(item.price);
+              const pH=!item.price?'':(v.length===1&&!v[0].label)
+                ?`<div class="item-price">${escapeHtml(v[0].price)}</div>`
+                :`<div class="price-list">${v.map(x=>`<div class="price-variant">${x.label?`<span class="price-label">${escapeHtml(x.label)}</span>`:''}<span class="price-amount">${escapeHtml(x.price)}</span></div>`).join('')}</div>`;
+              return `<div class="menu-item"><div class="item-left"><div class="item-name">${escapeHtml(item.name)}</div>${item.notes?`<div class="item-note">${escapeHtml(item.notes)}</div>`:''}</div>${pH}</div>`;
+            }).join('');
+          }).join('')}</div>`;
+      }).join('');
+    }
+
+    async function load() {
+      try {
+        const res=await fetch(SHEET_URL+'&_='+Date.now());
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        const rows=parseCSV(await res.text());
+        const hi=rows.findIndex(r=>(r[0]||'').trim().toLowerCase()==='section');
+        renderMenu(hi>=0?rows.slice(hi+1):[]);
+      } catch { document.getElementById('main').innerHTML='<div class="status">Menu unavailable — please ask a member of staff.</div>'; }
+    }
+    load();
+  </script>
+</body>
+</html>
