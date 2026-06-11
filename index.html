@@ -123,7 +123,7 @@
       overflow-wrap: break-word;
     }
 
-    .item-allergens {
+    .item-note {
       font-size: 12px;
       font-style: italic;
       color: var(--muted);
@@ -325,7 +325,10 @@
         const rawSub = (row[1] || '').trim();
         const name = (row[2] || '').trim();
         const price = (row[3] || '').trim();
-        const allergens = (row[4] || '').trim();
+        // Free-text notes. Gather every trailing column so an unquoted comma in
+        // the cell (which the CSV would split into extra columns) never scrubs
+        // words off the end.
+        const notes = row.slice(4).map(s => (s || '').trim()).filter(Boolean).join(', ');
 
         // Skip stray config rows and rows with no usable label.
         if (CONFIG_KEYS.includes(sec.toUpperCase())) continue;
@@ -338,7 +341,7 @@
 
         if (!sections[sec]) { sections[sec] = { subOrder: [], subs: {} }; sectionOrder.push(sec); }
         if (!sections[sec].subs[sub]) { sections[sec].subs[sub] = []; sections[sec].subOrder.push(sub); }
-        sections[sec].subs[sub].push({ name: label, price, allergens });
+        sections[sec].subs[sub].push({ name: label, price, notes });
       }
 
       if (!sectionOrder.length) {
@@ -354,7 +357,7 @@
             const variants = parsePrice(item.price);
             const priceHtml = !item.price
               ? ''
-              : variants.length === 1
+              : (variants.length === 1 && !variants[0].label)
               ? `<div class="item-price">${escapeHtml(variants[0].price)}</div>`
               : `<div class="price-list">${variants.map(v =>
                   `<div class="price-variant">${v.label ? `<span class="price-label">${escapeHtml(v.label)}</span>` : ''}<span class="price-amount">${escapeHtml(v.price)}</span></div>`
@@ -363,7 +366,7 @@
             <div class="menu-item">
               <div class="item-left">
                 <div class="item-name">${escapeHtml(item.name)}</div>
-                ${item.allergens ? `<div class="item-allergens">${escapeHtml(item.allergens)}</div>` : ''}
+                ${item.notes ? `<div class="item-note">${escapeHtml(item.notes)}</div>` : ''}
               </div>
               ${priceHtml}
             </div>`;
