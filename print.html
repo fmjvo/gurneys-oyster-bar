@@ -78,8 +78,11 @@
 
     /* Every section after the first gets a fresh page when printing */
     @media print {
+      /* Force background colours to print (black section headers) */
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
       .menu-section + .menu-section { break-before: page; }
       .menu-section { break-inside: avoid; }
+      .menu-item { break-inside: avoid; }
     }
 
     .section-heading {
@@ -124,7 +127,7 @@
     .item-note {
       font-size: 8pt;
       font-style: italic;
-      color: #555;
+      color: #333;
       margin-top: 0.4mm;
     }
 

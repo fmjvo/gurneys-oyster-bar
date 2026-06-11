@@ -46,7 +46,11 @@
       }
       .print-btn:hover { background: #333; }
     }
-    @media print { .print-btn { display: none; } }
+    @media print {
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .print-btn { display: none; }
+      .menu-item { break-inside: avoid; }
+    }
 
     header {
       text-align: center;
@@ -102,7 +106,7 @@
 
     .item-left { flex: 1; min-width: 0; }
     .item-name { font-size: 10.5pt; }
-    .item-note { font-size: 8pt; font-style: italic; color: #555; margin-top: 0.4mm; }
+    .item-note { font-size: 8pt; font-style: italic; color: #333; margin-top: 0.4mm; }
 
     .item-price { font-size: 11pt; font-weight: 700; margin-left: 5mm; white-space: nowrap; }
 
