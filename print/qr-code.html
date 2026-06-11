@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gurney's — QR Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A5 portrait; margin: 12mm 14mm; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: #000;
+      font-family: 'Fraunces', Georgia, serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    @media screen {
+      html { background: #ccc; padding: 10mm 0 20mm; }
+      body {
+        width: 148mm;
+        min-height: 210mm;
+        margin: 0 auto;
+        padding: 12mm 14mm;
+        box-shadow: 0 3px 18px rgba(0,0,0,.35);
+        justify-content: flex-start;
+      }
+      .print-btn {
+        display: block;
+        width: calc(100% + 28mm);
+        margin: -12mm -14mm 0;
+        padding: 7px 0;
+        background: #111;
+        color: #fff;
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 8.5pt;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+      }
+      .print-btn:hover { background: #333; }
+    }
+
+    @media print {
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; color: #000; }
+      body { min-height: 0; justify-content: center; }
+      .print-btn { display: none; }
+    }
+
+    .page-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+      gap: 8mm;
+      padding: 8mm 0;
+    }
+
+    header {
+      text-align: center;
+      padding-bottom: 6mm;
+      border-bottom: 2pt solid #000;
+      width: 100%;
+    }
+
+    header img.logo {
+      display: block;
+      width: 62mm;
+      height: auto;
+      margin: 0 auto 2.5mm;
+    }
+
+    header .tagline {
+      font-size: 7.5pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .qr-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5mm;
+    }
+
+    .qr-wrap img.qr {
+      display: block;
+      width: 80mm;
+      height: 80mm;
+      image-rendering: crisp-edges;
+    }
+
+    .qr-caption {
+      font-size: 9pt;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  <div class="page-content">
+    <header>
+      <img class="logo" src="/logo-dark.jpg" alt="Gurney's Oyster Bar">
+      <p class="tagline">Drove Orchards &middot; Thornham &middot; Norfolk</p>
+    </header>
+    <div class="qr-wrap">
+      <img class="qr" src="/qr-code.png" alt="QR code — scan to view our menu">
+      <p class="qr-caption">Scan to view our menu</p>
+    </div>
+  </div>
+</body>
+</html>
